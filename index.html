@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Periodic Table of Elements</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e1e5eb;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            border-radius: 3px;
+        }
+        
+        .periodic-table-container {
+            display: flex;
+            flex-direction: column;
+            align-items: left;
+            margin-bottom: 40px;
+        }
+        
+        .periodic-table {
+            display: grid;
+            grid-template-columns: repeat(18, 1fr);
+            grid-template-rows: repeat(9, auto);
+            gap: 5px;
+            width: 100%;
+            max-width: 1200px;
+        }
+        
+        .element {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 4px 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            min-height: 70px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            aspect-ratio: 1/1;
+        }
+        
+        .element:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+        
+        .atomic-number {
+            font-size: 0.7rem;
+            position: absolute;
+            top: 1px;
+            left: 5px;
+            color: #666;
+        }
+        
+        .symbol {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 6px;
+        }
+        
+        .name {
+            font-size: 0.6rem;
+            color: #555;
+        }
+        
+        .atomic-weight {
+            font-size: 0.6rem;
+            color: #777;
+        }
+        
+        .lanthanoids-actinoids-container {
+            display: none; /* Hide the separate container */
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 1.5rem;
+        }
+        
+        .empty {
+            background-color: transparent;
+            border: none;
+        }
+        
+        /* Element categories */
+        .alkali-metal { background-color: #ff9999; }
+        .alkaline-earth-metal { background-color: #ffcc99; }
+        .transition-metal { background-color: #ffeb99; }
+        .post-transition-metal { background-color: #ccff99; }
+        .metalloid { background-color: #99ffcc; }
+        .nonmetal { background-color: #99ccff; }
+        .halogen { background-color: #cc99ff; }
+        .noble-gas { background-color: #ff99cc; }
+        .lanthanoid { background-color: #ccffff; }
+        .actinoid { background-color: #ffccff; }
+        
+        /* Position elements in grid using grid-row and grid-column */
+        /* Period 1 */
+        .element[data-number="1"] { grid-row: 1; grid-column: 1; }
+        .element[data-number="2"] { grid-row: 1; grid-column: 18; }
+        
+        /* Period 2 */
+        .element[data-number="3"] { grid-row: 2; grid-column: 1; }
+        .element[data-number="4"] { grid-row: 2; grid-column: 2; }
+        .element[data-number="5"] { grid-row: 2; grid-column: 13; }
+        .element[data-number="6"] { grid-row: 2; grid-column: 14; }
+        .element[data-number="7"] { grid-row: 2; grid-column: 15; }
+        .element[data-number="8"] { grid-row: 2; grid-column: 16; }
+        .element[data-number="9"] { grid-row: 2; grid-column: 17; }
+        .element[data-number="10"] { grid-row: 2; grid-column: 18; }
+        
+        /* Period 3 */
+        .element[data-number="11"] { grid-row: 3; grid-column: 1; }
+        .element[data-number="12"] { grid-row: 3; grid-column: 2; }
+        .element[data-number="13"] { grid-row: 3; grid-column: 13; }
+        .element[data-number="14"] { grid-row: 3; grid-column: 14; }
+        .element[data-number="15"] { grid-row: 3; grid-column: 15; }
+        .element[data-number="16"] { grid-row: 3; grid-column: 16; }
+        .element[data-number="17"] { grid-row: 3; grid-column: 17; }
+        .element[data-number="18"] { grid-row: 3; grid-column: 18; }
+        
+        /* Period 4 */
+        .element[data-number="19"] { grid-row: 4; grid-column: 1; }
+        .element[data-number="20"] { grid-row: 4; grid-column: 2; }
+        .element[data-number="21"] { grid-row: 4; grid-column: 3; }
+        .element[data-number="22"] { grid-row: 4; grid-column: 4; }
+        .element[data-number="23"] { grid-row: 4; grid-column: 5; }
+        .element[data-number="24"] { grid-row: 4; grid-column: 6; }
+        .element[data-number="25"] { grid-row: 4; grid-column: 7; }
+        .element[data-number="26"] { grid-row: 4; grid-column: 8; }
+        .element[data-number="27"] { grid-row: 4; grid-column: 9; }
+        .element[data-number="28"] { grid-row: 4; grid-column: 10; }
+        .element[data-number="29"] { grid-row: 4; grid-column: 11; }
+        .element[data-number="30"] { grid-row: 4; grid-column: 12; }
+        .element[data-number="31"] { grid-row: 4; grid-column: 13; }
+        .element[data-number="32"] { grid-row: 4; grid-column: 14; }
+        .element[data-number="33"] { grid-row: 4; grid-column: 15; }
+        .element[data-number="34"] { grid-row: 4; grid-column: 16; }
+        .element[data-number="35"] { grid-row: 4; grid-column: 17; }
+        .element[data-number="36"] { grid-row: 4; grid-column: 18; }
+        
+        /* Period 5 */
+        .element[data-number="37"] { grid-row: 5; grid-column: 1; }
+        .element[data-number="38"] { grid-row: 5; grid-column: 2; }
+        .element[data-number="39"] { grid-row: 5; grid-column: 3; }
+        .element[data-number="40"] { grid-row: 5; grid-column: 4; }
+        .element[data-number="41"] { grid-row: 5; grid-column: 5; }
+        .element[data-number="42"] { grid-row: 5; grid-column: 6; }
+        .element[data-number="43"] { grid-row: 5; grid-column: 7; }
+        .element[data-number="44"] { grid-row: 5; grid-column: 8; }
+        .element[data-number="45"] { grid-row: 5; grid-column: 9; }
+        .element[data-number="46"] { grid-row: 5; grid-column: 10; }
+        .element[data-number="47"] { grid-row: 5; grid-column: 11; }
+        .element[data-number="48"] { grid-row: 5; grid-column: 12; }
+        .element[data-number="49"] { grid-row: 5; grid-column: 13; }
+        .element[data-number="50"] { grid-row: 5; grid-column: 14; }
+        .element[data-number="51"] { grid-row: 5; grid-column: 15; }
+        .element[data-number="52"] { grid-row: 5; grid-column: 16; }
+        .element[data-number="53"] { grid-row: 5; grid-column: 17; }
+        .element[data-number="54"] { grid-row: 5; grid-column: 18; }
+        
+        /* Period 6 */
+        .element[data-number="55"] { grid-row: 6; grid-column: 1; }
+        .element[data-number="56"] { grid-row: 6; grid-column: 2; }
+        .element[data-number="57"] { grid-row: 6; grid-column: 3; }
+        .element[data-number="72"] { grid-row: 6; grid-column: 4; }
+        .element[data-number="73"] { grid-row: 6; grid-column: 5; }
+        .element[data-number="74"] { grid-row: 6; grid-column: 6; }
+        .element[data-number="75"] { grid-row: 6; grid-column: 7; }
+        .element[data-number="76"] { grid-row: 6; grid-column: 8; }
+        .element[data-number="77"] { grid-row: 6; grid-column: 9; }
+        .element[data-number="78"] { grid-row: 6; grid-column: 10; }
+        .element[data-number="79"] { grid-row: 6; grid-column: 11; }
+        .element[data-number="80"] { grid-row: 6; grid-column: 12; }
+        .element[data-number="81"] { grid-row: 6; grid-column: 13; }
+        .element[data-number="82"] { grid-row: 6; grid-column: 14; }
+        .element[data-number="83"] { grid-row: 6; grid-column: 15; }
+        .element[data-number="84"] { grid-row: 6; grid-column: 16; }
+        .element[data-number="85"] { grid-row: 6; grid-column: 17; }
+        .element[data-number="86"] { grid-row: 6; grid-column: 18; }
+        
+        /* Period 7 */
+        .element[data-number="87"] { grid-row: 7; grid-column: 1; }
+        .element[data-number="88"] { grid-row: 7; grid-column: 2; }
+        .element[data-number="89"] { grid-row: 7; grid-column: 3; }
+        .element[data-number="104"] { grid-row: 7; grid-column: 4; }
+        .element[data-number="105"] { grid-row: 7; grid-column: 5; }
+        .element[data-number="106"] { grid-row: 7; grid-column: 6; }
+        .element[data-number="107"] { grid-row: 7; grid-column: 7; }
+        .element[data-number="108"] { grid-row: 7; grid-column: 8; }
+        .element[data-number="109"] { grid-row: 7; grid-column: 9; }
+        .element[data-number="110"] { grid-row: 7; grid-column: 10; }
+        .element[data-number="111"] { grid-row: 7; grid-column: 11; }
+        .element[data-number="112"] { grid-row: 7; grid-column: 12; }
+        .element[data-number="113"] { grid-row: 7; grid-column: 13; }
+        .element[data-number="114"] { grid-row: 7; grid-column: 14; }
+        .element[data-number="115"] { grid-row: 7; grid-column: 15; }
+        .element[data-number="116"] { grid-row: 7; grid-column: 16; }
+        .element[data-number="117"] { grid-row: 7; grid-column: 17; }
+        .element[data-number="118"] { grid-row: 7; grid-column: 18; }
+        
+        /* Lanthanoids - Period 8 */
+        .element[data-number="58"] { grid-row: 8; grid-column: 4; }
+        .element[data-number="59"] { grid-row: 8; grid-column: 5; }
+        .element[data-number="60"] { grid-row: 8; grid-column: 6; }
+        .element[data-number="61"] { grid-row: 8; grid-column: 7; }
+        .element[data-number="62"] { grid-row: 8; grid-column: 8; }
+        .element[data-number="63"] { grid-row: 8; grid-column: 9; }
+        .element[data-number="64"] { grid-row: 8; grid-column: 10; }
+        .element[data-number="65"] { grid-row: 8; grid-column: 11; }
+        .element[data-number="66"] { grid-row: 8; grid-column: 12; }
+        .element[data-number="67"] { grid-row: 8; grid-column: 13; }
+        .element[data-number="68"] { grid-row: 8; grid-column: 14; }
+        .element[data-number="69"] { grid-row: 8; grid-column: 15; }
+        .element[data-number="70"] { grid-row: 8; grid-column: 16; }
+        .element[data-number="71"] { grid-row: 8; grid-column: 17; }
+        
+        /* Actinoids - Period 9 */
+        .element[data-number="90"] { grid-row: 9; grid-column: 4; }
+        .element[data-number="91"] { grid-row: 9; grid-column: 5; }
+        .element[data-number="92"] { grid-row: 9; grid-column: 6; }
+        .element[data-number="93"] { grid-row: 9; grid-column: 7; }
+        .element[data-number="94"] { grid-row: 9; grid-column: 8; }
+        .element[data-number="95"] { grid-row: 9; grid-column: 9; }
+        .element[data-number="96"] { grid-row: 9; grid-column: 10; }
+        .element[data-number="97"] { grid-row: 9; grid-column: 11; }
+        .element[data-number="98"] { grid-row: 9; grid-column: 12; }
+        .element[data-number="99"] { grid-row: 9; grid-column: 13; }
+        .element[data-number="100"] { grid-row: 9; grid-column: 14; }
+        .element[data-number="101"] { grid-row: 9; grid-column: 15; }
+        .element[data-number="102"] { grid-row: 9; grid-column: 16; }
+        .element[data-number="103"] { grid-row: 9; grid-column: 17; }
+        
+        /* Lanthanoids label */
+        .lanthanoids-label {
+            grid-row: 8;
+            grid-column: 1 / span 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 5px;
+        }
+        
+        /* Actinoids label */
+        .actinoids-label {
+            grid-row: 9;
+            grid-column: 1 / span 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 5px;
+        }
+        
+        /* Group labels */
+        .group-labels {
+            display: grid;
+            grid-template-columns: repeat(18, 1fr);
+            gap: 6px;
+            margin-bottom: 10px;
+            width: 100%;
+            max-width: 1200px;
+        }
+        
+        .group-label {
+            text-align: center;
+            font-weight: bold;
+            color: #555;
+            font-size: 0.9rem;
+            padding: 4px 4px;
+            width: 71px;
+        }
+        
+        /* Period labels */
+        .period-labels {
+            display: flex;
+            flex-direction: column;
+            margin-right: 10px;
+        }
+        
+        .period-label {
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #555;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+        
+        .period-label-extra {
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #555;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+        
+        .table-with-labels {
+            display: flex;
+            align-items: start;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #777;
+        }
+        
+        .modal-header {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-symbol {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-right: 15px;
+            display: inline-block;
+        }
+        
+        .modal-name {
+            font-size: 1.8rem;
+            color: #555;
+            display: inline-block;
+        }
+        
+        .modal-atomic-number {
+            font-size: 1.2rem;
+            color: #777;
+            margin-top: 5px;
+        }
+        
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .detail-item {
+            margin-bottom: 10px;
+        }
+        
+        .detail-label {
+            font-weight: bold;
+            color: #555;
+            font-size: 0.9rem;
+        }
+        
+        .detail-value {
+            font-size: 1rem;
+        }
+        
+        @media (max-width: 1200px) {
+            .periodic-table {
+                grid-template-columns: repeat(18, minmax(40px, 1fr));
+            }
+            
+            .element {
+                min-height: 60px;
+                padding: 5px 2px;
+            }
+            
+            .symbol {
+                font-size: 1rem;
+            }
+            
+            .period-label, .period-label-extra {
+                height: 60px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .periodic-table {
+                grid-template-columns: repeat(18, minmax(30px, 1fr));
+                gap: 2px;
+            }
+            
+            .element {
+                min-height: 50px;
+                padding: 3px 1px;
+            }
+            
+            .atomic-number {
+                font-size: 0.6rem;
+                top: 2px;
+                left: 3px;
+            }
+            
+            .symbol {
+                font-size: 0.8rem;
+            }
+            
+            .name, .atomic-weight {
+                font-size: 0.5rem;
+            }
+            
+            .period-label, .period-label-extra {
+                height: 50px;
+                font-size: 0.8rem;
+            }
+            
+            .group-label {
+                font-size: 0.7rem;
+            }
+            
+            .lanthanoids-label, .actinoids-label {
+                font-size: 0.7rem;
+            }
+            
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Periodic Table of Elements</h1>
+            <p class="subtitle">With Lanthanoids and Actinoids</p>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color alkali-metal"></div>
+                    <span>Alkali Metal</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color alkaline-earth-metal"></div>
+                    <span>Alkaline Earth Metal</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color transition-metal"></div>
+                    <span>Transition Metal</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color post-transition-metal"></div>
+                    <span>Post-Transition Metal</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color metalloid"></div>
+                    <span>Metalloid</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color nonmetal"></div>
+                    <span>Nonmetal</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color halogen"></div>
+                    <span>Halogen</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color noble-gas"></div>
+                    <span>Noble Gas</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color lanthanoid"></div>
+                    <span>Lanthanoid</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color actinoid"></div>
+                    <span>Actinoid</span>
+                </div>
+            </div>
+        </header>
+        
+        <main>
+            <div class="periodic-table-container">
+                <!-- Group labels -->
+                <div class="group-labels">
+                    <div class="group-label">1</div>
+                    <div class="group-label">2</div>
+                    <div class="group-label">3</div>
+                    <div class="group-label">4</div>
+                    <div class="group-label">5</div>
+                    <div class="group-label">6</div>
+                    <div class="group-label">7</div>
+                    <div class="group-label">8</div>
+                    <div class="group-label">9</div>
+                    <div class="group-label">10</div>
+                    <div class="group-label">11</div>
+                    <div class="group-label">12</div>
+                    <div class="group-label">13</div>
+                    <div class="group-label">14</div>
+                    <div class="group-label">15</div>
+                    <div class="group-label">16</div>
+                    <div class="group-label">17</div>
+                    <div class="group-label">18</div>
+                </div>
+                
+                <!-- <div class="table-with-labels"> -->
+                    <!-- Period labels -->
+                    <!-- <div class="period-labels">
+                        <div class="period-label">1</div>
+                        <div class="period-label">2</div>
+                        <div class="period-label">3</div>
+                        <div class="period-label">4</div>
+                        <div class="period-label">5</div>
+                        <div class="period-label">6</div>
+                        <div class="period-label">7</div>
+                        <div class="period-label-extra">8</div>
+                        <div class="period-label-extra">9</div>
+                    </div> -->
+                    
+                    <!-- Main periodic table with Lanthanoids and Actinoids -->
+                    <div class="periodic-table" id="periodic-table">
+                        <!-- Elements will be inserted by JavaScript -->
+                        <!-- Lanthanoids and Actinoids labels -->
+                        <div class="lanthanoids-label">Lanthanoids</div>
+                        <div class="actinoids-label">Actinoids</div>
+                    </div>
+                <!-- </div> -->
+            </div>
+        </main>
+    </div>
+    
+    <div class="modal" id="element-modal">
+        <div class="modal-content">
+            <span class="close" id="close-modal">&times;</span>
+            <div class="modal-header">
+                <span class="modal-symbol" id="modal-symbol"></span>
+                <span class="modal-name" id="modal-name"></span>
+                <div class="modal-atomic-number" id="modal-atomic-number"></div>
+            </div>
+            <div class="details-grid" id="modal-details">
+                <!-- Details will be inserted by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Element data with all required properties
+        const elements = [
+            // Period 1
+            { number: 1, symbol: "H", name: "Hydrogen", weight: "1.008", category: "nonmetal", 
+              config: "1s¹", radius: 0.53, electronegativity: 2.20, ionicRadius: 0.012, vanderwaals: 1.20, period: 1, group: 1 },
+            { number: 2, symbol: "He", name: "Helium", weight: "4.0026", category: "noble-gas", 
+              config: "1s²", radius: 0.31, electronegativity: null, ionicRadius: null, vanderwaals: 1.40, period: 1, group: 18 },
+            
+            // Period 2
+            { number: 3, symbol: "Li", name: "Lithium", weight: "6.94", category: "alkali-metal", 
+              config: "[He] 2s¹", radius: 1.67, electronegativity: 0.98, ionicRadius: 0.76, vanderwaals: 1.82, period: 2, group: 1 },
+            { number: 4, symbol: "Be", name: "Beryllium", weight: "9.0122", category: "alkaline-earth-metal", 
+              config: "[He] 2s²", radius: 1.12, electronegativity: 1.57, ionicRadius: 0.45, vanderwaals: null, period: 2, group: 2 },
+            { number: 5, symbol: "B", name: "Boron", weight: "10.81", category: "metalloid", 
+              config: "[He] 2s² 2p¹", radius: 0.87, electronegativity: 2.04, ionicRadius: 0.27, vanderwaals: 1.92, period: 2, group: 13 },
+            { number: 6, symbol: "C", name: "Carbon", weight: "12.011", category: "nonmetal", 
+              config: "[He] 2s² 2p²", radius: 0.67, electronegativity: 2.55, ionicRadius: 0.16, vanderwaals: 1.70, period: 2, group: 14 },
+            { number: 7, symbol: "N", name: "Nitrogen", weight: "14.007", category: "nonmetal", 
+              config: "[He] 2s² 2p³", radius: 0.56, electronegativity: 3.04, ionicRadius: 1.46, vanderwaals: 1.55, period: 2, group: 15 },
+            { number: 8, symbol: "O", name: "Oxygen", weight: "15.999", category: "nonmetal", 
+              config: "[He] 2s² 2p⁴", radius: 0.48, electronegativity: 3.44, ionicRadius: 1.40, vanderwaals: 1.52, period: 2, group: 16 },
+            { number: 9, symbol: "F", name: "Fluorine", weight: "18.998", category: "halogen", 
+              config: "[He] 2s² 2p⁵", radius: 0.42, electronegativity: 3.98, ionicRadius: 1.33, vanderwaals: 1.47, period: 2, group: 17 },
+            { number: 10, symbol: "Ne", name: "Neon", weight: "20.180", category: "noble-gas", 
+              config: "[He] 2s² 2p⁶", radius: 0.38, electronegativity: null, ionicRadius: null, vanderwaals: 1.54, period: 2, group: 18 },
+            
+            // Period 3
+            { number: 11, symbol: "Na", name: "Sodium", weight: "22.990", category: "alkali-metal", 
+              config: "[Ne] 3s¹", radius: 1.90, electronegativity: 0.93, ionicRadius: 1.02, vanderwaals: 2.27, period: 3, group: 1 },
+            { number: 12, symbol: "Mg", name: "Magnesium", weight: "24.305", category: "alkaline-earth-metal", 
+              config: "[Ne] 3s²", radius: 1.45, electronegativity: 1.31, ionicRadius: 0.72, vanderwaals: 1.73, period: 3, group: 2 },
+            { number: 13, symbol: "Al", name: "Aluminum", weight: "26.982", category: "post-transition-metal", 
+              config: "[Ne] 3s² 3p¹", radius: 1.18, electronegativity: 1.61, ionicRadius: 0.535, vanderwaals: 1.84, period: 3, group: 13 },
+            { number: 14, symbol: "Si", name: "Silicon", weight: "28.085", category: "metalloid", 
+              config: "[Ne] 3s² 3p²", radius: 1.11, electronegativity: 1.90, ionicRadius: 0.40, vanderwaals: 2.10, period: 3, group: 14 },
+            { number: 15, symbol: "P", name: "Phosphorus", weight: "30.974", category: "nonmetal", 
+              config: "[Ne] 3s² 3p³", radius: 0.98, electronegativity: 2.19, ionicRadius: 0.44, vanderwaals: 1.80, period: 3, group: 15 },
+            { number: 16, symbol: "S", name: "Sulfur", weight: "32.06", category: "nonmetal", 
+              config: "[Ne] 3s² 3p⁴", radius: 0.88, electronegativity: 2.58, ionicRadius: 1.84, vanderwaals: 1.80, period: 3, group: 16 },
+            { number: 17, symbol: "Cl", name: "Chlorine", weight: "35.45", category: "halogen", 
+              config: "[Ne] 3s² 3p⁵", radius: 0.79, electronegativity: 3.16, ionicRadius: 1.81, vanderwaals: 1.75, period: 3, group: 17 },
+            { number: 18, symbol: "Ar", name: "Argon", weight: "39.948", category: "noble-gas", 
+              config: "[Ne] 3s² 3p⁶", radius: 0.71, electronegativity: null, ionicRadius: null, vanderwaals: 1.88, period: 3, group: 18 },
+            
+            // Period 4
+            { number: 19, symbol: "K", name: "Potassium", weight: "39.098", category: "alkali-metal", 
+              config: "[Ar] 4s¹", radius: 2.43, electronegativity: 0.82, ionicRadius: 1.38, vanderwaals: 2.75, period: 4, group: 1 },
+            { number: 20, symbol: "Ca", name: "Calcium", weight: "40.078", category: "alkaline-earth-metal", 
+              config: "[Ar] 4s²", radius: 1.94, electronegativity: 1.00, ionicRadius: 1.00, vanderwaals: null, period: 4, group: 2 },
+            { number: 21, symbol: "Sc", name: "Scandium", weight: "44.956", category: "transition-metal", 
+              config: "[Ar] 3d¹ 4s²", radius: 1.84, electronegativity: 1.36, ionicRadius: 0.745, vanderwaals: null, period: 4, group: 3 },
+            { number: 22, symbol: "Ti", name: "Titanium", weight: "47.867", category: "transition-metal", 
+              config: "[Ar] 3d² 4s²", radius: 1.76, electronegativity: 1.54, ionicRadius: 0.86, vanderwaals: null, period: 4, group: 4 },
+            { number: 23, symbol: "V", name: "Vanadium", weight: "50.942", category: "transition-metal", 
+              config: "[Ar] 3d³ 4s²", radius: 1.71, electronegativity: 1.63, ionicRadius: 0.79, vanderwaals: null, period: 4, group: 5 },
+            { number: 24, symbol: "Cr", name: "Chromium", weight: "51.996", category: "transition-metal", 
+              config: "[Ar] 3d⁵ 4s¹", radius: 1.66, electronegativity: 1.66, ionicRadius: 0.80, vanderwaals: null, period: 4, group: 6 },
+            { number: 25, symbol: "Mn", name: "Manganese", weight: "54.938", category: "transition-metal", 
+              config: "[Ar] 3d⁵ 4s²", radius: 1.61, electronegativity: 1.55, ionicRadius: 0.67, vanderwaals: null, period: 4, group: 7 },
+            { number: 26, symbol: "Fe", name: "Iron", weight: "55.845", category: "transition-metal", 
+              config: "[Ar] 3d⁶ 4s²", radius: 1.56, electronegativity: 1.83, ionicRadius: 0.78, vanderwaals: null, period: 4, group: 8 },
+            { number: 27, symbol: "Co", name: "Cobalt", weight: "58.933", category: "transition-metal", 
+              config: "[Ar] 3d⁷ 4s²", radius: 1.52, electronegativity: 1.88, ionicRadius: 0.745, vanderwaals: null, period: 4, group: 9 },
+            { number: 28, symbol: "Ni", name: "Nickel", weight: "58.693", category: "transition-metal", 
+              config: "[Ar] 3d⁸ 4s²", radius: 1.49, electronegativity: 1.91, ionicRadius: 0.69, vanderwaals: 1.63, period: 4, group: 10 },
+            { number: 29, symbol: "Cu", name: "Copper", weight: "63.546", category: "transition-metal", 
+              config: "[Ar] 3d¹⁰ 4s¹", radius: 1.45, electronegativity: 1.90, ionicRadius: 0.73, vanderwaals: 1.40, period: 4, group: 11 },
+            { number: 30, symbol: "Zn", name: "Zinc", weight: "65.38", category: "transition-metal", 
+              config: "[Ar] 3d¹⁰ 4s²", radius: 1.42, electronegativity: 1.65, ionicRadius: 0.74, vanderwaals: 1.39, period: 4, group: 12 },
+            { number: 31, symbol: "Ga", name: "Gallium", weight: "69.723", category: "post-transition-metal", 
+              config: "[Ar] 3d¹⁰ 4s² 4p¹", radius: 1.36, electronegativity: 1.81, ionicRadius: 0.62, vanderwaals: 1.87, period: 4, group: 13 },
+            { number: 32, symbol: "Ge", name: "Germanium", weight: "72.630", category: "metalloid", 
+              config: "[Ar] 3d¹⁰ 4s² 4p²", radius: 1.25, electronegativity: 2.01, ionicRadius: 0.53, vanderwaals: 2.10, period: 4, group: 14 },
+            { number: 33, symbol: "As", name: "Arsenic", weight: "74.922", category: "metalloid", 
+              config: "[Ar] 3d¹⁰ 4s² 4p³", radius: 1.14, electronegativity: 2.18, ionicRadius: 0.58, vanderwaals: 1.85, period: 4, group: 15 },
+            { number: 34, symbol: "Se", name: "Selenium", weight: "78.971", category: "nonmetal", 
+              config: "[Ar] 3d¹⁰ 4s² 4p⁴", radius: 1.03, electronegativity: 2.55, ionicRadius: 1.98, vanderwaals: 1.90, period: 4, group: 16 },
+            { number: 35, symbol: "Br", name: "Bromine", weight: "79.904", category: "halogen", 
+              config: "[Ar] 3d¹⁰ 4s² 4p⁵", radius: 0.94, electronegativity: 2.96, ionicRadius: 1.96, vanderwaals: 1.85, period: 4, group: 17 },
+            { number: 36, symbol: "Kr", name: "Krypton", weight: "83.798", category: "noble-gas", 
+              config: "[Ar] 3d¹⁰ 4s² 4p⁶", radius: 0.88, electronegativity: 3.00, ionicRadius: null, vanderwaals: 2.02, period: 4, group: 18 },
+            
+            // Period 5
+            { number: 37, symbol: "Rb", name: "Rubidium", weight: "85.468", category: "alkali-metal", 
+              config: "[Kr] 5s¹", radius: 2.65, electronegativity: 0.82, ionicRadius: 1.52, vanderwaals: null, period: 5, group: 1 },
+            { number: 38, symbol: "Sr", name: "Strontium", weight: "87.62", category: "alkaline-earth-metal", 
+              config: "[Kr] 5s²", radius: 2.19, electronegativity: 0.95, ionicRadius: 1.18, vanderwaals: null, period: 5, group: 2 },
+            { number: 39, symbol: "Y", name: "Yttrium", weight: "88.906", category: "transition-metal", 
+              config: "[Kr] 4d¹ 5s²", radius: 2.12, electronegativity: 1.22, ionicRadius: 0.90, vanderwaals: null, period: 5, group: 3 },
+            { number: 40, symbol: "Zr", name: "Zirconium", weight: "91.224", category: "transition-metal", 
+              config: "[Kr] 4d² 5s²", radius: 2.06, electronegativity: 1.33, ionicRadius: 0.72, vanderwaals: null, period: 5, group: 4 },
+            { number: 41, symbol: "Nb", name: "Niobium", weight: "92.906", category: "transition-metal", 
+              config: "[Kr] 4d⁴ 5s¹", radius: 1.98, electronegativity: 1.6, ionicRadius: 0.64, vanderwaals: null, period: 5, group: 5 },
+            { number: 42, symbol: "Mo", name: "Molybdenum", weight: "95.95", category: "transition-metal", 
+              config: "[Kr] 4d⁵ 5s¹", radius: 1.90, electronegativity: 2.16, ionicRadius: 0.59, vanderwaals: null, period: 5, group: 6 },
+            { number: 43, symbol: "Tc", name: "Technetium", weight: "(98)", category: "transition-metal", 
+              config: "[Kr] 4d⁵ 5s²", radius: 1.83, electronegativity: 1.9, ionicRadius: 0.56, vanderwaals: null, period: 5, group: 7 },
+            { number: 44, symbol: "Ru", name: "Ruthenium", weight: "101.07", category: "transition-metal", 
+              config: "[Kr] 4d⁷ 5s¹", radius: 1.78, electronegativity: 2.2, ionicRadius: 0.62, vanderwaals: null, period: 5, group: 8 },
+            { number: 45, symbol: "Rh", name: "Rhodium", weight: "102.91", category: "transition-metal", 
+              config: "[Kr] 4d⁸ 5s¹", radius: 1.73, electronegativity: 2.28, ionicRadius: 0.665, vanderwaals: null, period: 5, group: 9 },
+            { number: 46, symbol: "Pd", name: "Palladium", weight: "106.42", category: "transition-metal", 
+              config: "[Kr] 4d¹⁰", radius: 1.69, electronegativity: 2.20, ionicRadius: 0.86, vanderwaals: 1.63, period: 5, group: 10 },
+            { number: 47, symbol: "Ag", name: "Silver", weight: "107.87", category: "transition-metal", 
+              config: "[Kr] 4d¹⁰ 5s¹", radius: 1.65, electronegativity: 1.93, ionicRadius: 1.15, vanderwaals: 1.72, period: 5, group: 11 },
+            { number: 48, symbol: "Cd", name: "Cadmium", weight: "112.41", category: "transition-metal", 
+              config: "[Kr] 4d¹⁰ 5s²", radius: 1.61, electronegativity: 1.69, ionicRadius: 0.95, vanderwaals: 1.58, period: 5, group: 12 },
+            { number: 49, symbol: "In", name: "Indium", weight: "114.82", category: "post-transition-metal", 
+              config: "[Kr] 4d¹⁰ 5s² 5p¹", radius: 1.56, electronegativity: 1.78, ionicRadius: 0.80, vanderwaals: 1.93, period: 5, group: 13 },
+            { number: 50, symbol: "Sn", name: "Tin", weight: "118.71", category: "post-transition-metal", 
+              config: "[Kr] 4d¹⁰ 5s² 5p²", radius: 1.45, electronegativity: 1.96, ionicRadius: 0.69, vanderwaals: 2.17, period: 5, group: 14 },
+            { number: 51, symbol: "Sb", name: "Antimony", weight: "121.76", category: "metalloid", 
+              config: "[Kr] 4d¹⁰ 5s² 5p³", radius: 1.33, electronegativity: 2.05, ionicRadius: 0.76, vanderwaals: 2.06, period: 5, group: 15 },
+            { number: 52, symbol: "Te", name: "Tellurium", weight: "127.60", category: "metalloid", 
+              config: "[Kr] 4d¹⁰ 5s² 5p⁴", radius: 1.23, electronegativity: 2.1, ionicRadius: 2.21, vanderwaals: 2.06, period: 5, group: 16 },
+            { number: 53, symbol: "I", name: "Iodine", weight: "126.90", category: "halogen", 
+              config: "[Kr] 4d¹⁰ 5s² 5p⁵", radius: 1.15, electronegativity: 2.66, ionicRadius: 2.20, vanderwaals: 1.98, period: 5, group: 17 },
+            { number: 54, symbol: "Xe", name: "Xenon", weight: "131.29", category: "noble-gas", 
+              config: "[Kr] 4d¹⁰ 5s² 5p⁶", radius: 1.08, electronegativity: 2.6, ionicRadius: null, vanderwaals: 2.16, period: 5, group: 18 },
+            
+            // Period 6
+            { number: 55, symbol: "Cs", name: "Cesium", weight: "132.91", category: "alkali-metal", 
+              config: "[Xe] 6s¹", radius: 2.98, electronegativity: 0.79, ionicRadius: 1.67, vanderwaals: null, period: 6, group: 1 },
+            { number: 56, symbol: "Ba", name: "Barium", weight: "137.33", category: "alkaline-earth-metal", 
+              config: "[Xe] 6s²", radius: 2.53, electronegativity: 0.89, ionicRadius: 1.35, vanderwaals: null, period: 6, group: 2 },
+            { number: 57, symbol: "La", name: "Lanthanum", weight: "138.91", category: "lanthanoid", 
+              config: "[Xe] 5d¹ 6s²", radius: 2.26, electronegativity: 1.1, ionicRadius: 1.032, vanderwaals: null, period: 6, group: 3 },
+            { number: 72, symbol: "Hf", name: "Hafnium", weight: "178.49", category: "transition-metal", 
+              config: "[Xe] 4f¹⁴ 5d² 6s²", radius: 2.16, electronegativity: 1.3, ionicRadius: 0.71, vanderwaals: null, period: 6, group: 4 },
+            { number: 73, symbol: "Ta", name: "Tantalum", weight: "180.95", category: "transition-metal", 
+              config: "[Xe] 4f¹⁴ 5d³ 6s²", radius: 2.09, electronegativity: 1.5, ionicRadius: 0.64, vanderwaals: null, period: 6, group: 5 },
+            { number: 74, symbol: "W", name: "Tungsten", weight: "183.84", category: "transition-metal", 
+              config: "[Xe] 4f¹⁴ 5d⁴ 6s²", radius: 2.02, electronegativity: 2.36, ionicRadius: 0.62, vanderwaals: null, period: 6, group: 6 },
+            { number: 75, symbol: "Re", name: "Rhenium", weight: "186.21", category: "transition-metal", 
+              config: "[Xe] 4f¹⁴ 5d⁵ 6s²", radius: 1.97, electronegativity: 1.9, ionicRadius: 0.53, vanderwaals: null, period: 6, group: 7 },
+            { number: 76, symbol: "Os", name: "Osmium", weight: "190.23", category: "transition-metal", 
+              config: "[Xe] 4f¹⁴ 5d⁶ 6s²", radius: 1.92, electronegativity: 2.2, ionicRadius: 0.63, vanderwaals: null, period: 6, group: 8 },
+            { number: 77, symbol: "Ir", name: "Iridium", weight: "192.22", category: "transition-metal", 
+              config: "[Xe] 4f¹⁴ 5d⁷ 6s²", radius: 1.87, electronegativity: 2.20, ionicRadius: 0.625, vanderwaals: null, period: 6, group: 9 },
+            { number: 78, symbol: "Pt", name: "Platinum", weight: "195.08", category: "transition-metal", 
+              config: "[Xe] 4f¹⁴ 5d⁹ 6s¹", radius: 1.83, electronegativity: 2.28, ionicRadius: 0.80, vanderwaals: 1.75, period: 6, group: 10 },
+            { number: 79, symbol: "Au", name: "Gold", weight: "196.97", category: "transition-metal", 
+              config: "[Xe] 4f¹⁴ 5d¹⁰ 6s¹", radius: 1.79, electronegativity: 2.54, ionicRadius: 1.37, vanderwaals: 1.66, period: 6, group: 11 },
+            { number: 80, symbol: "Hg", name: "Mercury", weight: "200.59", category: "transition-metal", 
+              config: "[Xe] 4f¹⁴ 5d¹⁰ 6s²", radius: 1.76, electronegativity: 2.00, ionicRadius: 1.02, vanderwaals: 1.55, period: 6, group: 12 },
+            { number: 81, symbol: "Tl", name: "Thallium", weight: "204.38", category: "post-transition-metal", 
+              config: "[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p¹", radius: 1.71, electronegativity: 1.62, ionicRadius: 1.50, vanderwaals: 1.96, period: 6, group: 13 },
+            { number: 82, symbol: "Pb", name: "Lead", weight: "207.2", category: "post-transition-metal", 
+              config: "[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p²", radius: 1.75, electronegativity: 2.33, ionicRadius: 1.19, vanderwaals: 2.02, period: 6, group: 14 },
+            { number: 83, symbol: "Bi", name: "Bismuth", weight: "208.98", category: "post-transition-metal", 
+              config: "[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p³", radius: 1.70, electronegativity: 2.02, ionicRadius: 1.03, vanderwaals: 2.07, period: 6, group: 15 },
+            { number: 84, symbol: "Po", name: "Polonium", weight: "(209)", category: "post-transition-metal", 
+              config: "[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁴", radius: 1.76, electronegativity: 2.0, ionicRadius: 0.94, vanderwaals: 1.97, period: 6, group: 16 },
+            { number: 85, symbol: "At", name: "Astatine", weight: "(210)", category: "halogen", 
+              config: "[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁵", radius: 1.76, electronegativity: 2.2, ionicRadius: null, vanderwaals: 2.02, period: 6, group: 17 },
+            { number: 86, symbol: "Rn", name: "Radon", weight: "(222)", category: "noble-gas", 
+              config: "[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁶", radius: 1.75, electronegativity: null, ionicRadius: null, vanderwaals: 2.20, period: 6, group: 18 },
+            
+            // Period 7
+            { number: 87, symbol: "Fr", name: "Francium", weight: "(223)", category: "alkali-metal", 
+              config: "[Rn] 7s¹", radius: 2.60, electronegativity: 0.7, ionicRadius: 1.80, vanderwaals: null, period: 7, group: 1 },
+            { number: 88, symbol: "Ra", name: "Radium", weight: "(226)", category: "alkaline-earth-metal", 
+              config: "[Rn] 7s²", radius: 2.21, electronegativity: 0.9, ionicRadius: 1.48, vanderwaals: null, period: 7, group: 2 },
+            { number: 89, symbol: "Ac", name: "Actinium", weight: "(227)", category: "actinoid", 
+              config: "[Rn] 6d¹ 7s²", radius: 2.15, electronegativity: 1.1, ionicRadius: 1.12, vanderwaals: null, period: 7, group: 3 },
+            { number: 104, symbol: "Rf", name: "Rutherfordium", weight: "(267)", category: "transition-metal", 
+              config: "[Rn] 5f¹⁴ 6d² 7s²", radius: null, electronegativity: null, ionicRadius: null, vanderwaals: null, period: 7, group: 4 },
+            { number: 105, symbol: "Db", name: "Dubnium", weight: "(268)", category: "transition-metal", 
+              config: "[Rn] 5f¹⁴ 6d³ 7s²", radius: null, electronegativity: null, ionicRadius: null, vanderwaals: null, period: 7, group: 5 },
+            { number: 106, symbol: "Sg", name: "Seaborgium", weight: "(269)", category: "transition-metal", 
+              config: "[Rn] 5f¹⁴ 6d⁴ 7s²", radius: null, electronegativity: null, ionicRadius: null, vanderwaals: null, period: 7, group: 6 },
+            { number: 107, symbol: "Bh", name: "Bohrium", weight: "(270)", category: "transition-metal", 
+              config: "[Rn] 5f¹⁴ 6d⁵ 7s²", radius: null, electronegativity: null, ionicRadius: null, vanderwaals: null, period: 7, group: 7 },
+            { number: 108, symbol: "Hs", name: "Hassium", weight: "(269)", category: "transition-metal", 
+              config: "[Rn] 5f¹⁴ 6d⁶ 7s²", radius: null, electronegativity: null, ionicRadius: null, vanderwaals: null, period: 7, group: 8 },
+            { number: 109, symbol: "Mt", name: "Meitnerium", weight: "(278)", category: "transition-metal", 
+              config: "[Rn] 5f¹⁴ 6d⁷ 7s²", radius: null, electronegativity: null, ionicRadius: null, vanderwaals: null, period: 7, group: 9 },
+            { number: 110, symbol: "Ds", name: "Darmstadtium", weight: "(281)", category: "transition-metal", 
+              config: "[Rn] 5f¹⁴ 6d⁸ 7s²", radius: null, electronegativity: null, ionicRadius: null, vanderwaals: null, period: 7, group: 10 },
+            { number: 111, symbol: "Rg", name: "Roentgenium", weight: "(282)", category: "transition-metal", 
+              config: "[Rn] 5f¹⁴ 6d⁹ 7s²", radius: null, electronegativity: null, ionicRadius: null, vanderwaals: null, period: 7, group: 11 },
+            { number: 112, symbol: "Cn", name: "Copernicium", weight: "(285)", category: "transition-metal", 
+              config: "[Rn] 5f¹⁴ 6d¹⁰ 7s²", radius: null, electronegativity: null, ionicRadius: null, vanderwaals: null, period: 7, group: 12 },
+            { number: 113, symbol: "Nh", name: "Nihonium", weight: "(286)", category: "post-transition-metal", 
+              config: "[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p¹", radius: null, electronegativity: null, ionicRadius: null, vanderwaals: null, period: 7, group: 13 },
+            { number: 114, symbol: "Fl", name: "Flerovium", weight: "(289)", category: "post-transition-metal", 
+              config: "[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p²", radius: null, electronegativity: null, ionicRadius: null, vanderwaals: null, period: 7, group: 14 },
+            { number: 115, symbol: "Mc", name: "Moscovium", weight: "(290)", category: "post-transition-metal", 
+              config: "[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p³", radius: null, electronegativity: null, ionicRadius: null, vanderwaals: null, period: 7, group: 15 },
+            { number: 116, symbol: "Lv", name: "Livermorium", weight: "(293)", category: "post-transition-metal", 
+              config: "[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁴", radius: null, electronegativity: null, ionicRadius: null, vanderwaals: null, period: 7, group: 16 },
+            { number: 117, symbol: "Ts", name: "Tennessine", weight: "(294)", category: "halogen", 
+              config: "[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁵", radius: null, electronegativity: null, ionicRadius: null, vanderwaals: null, period: 7, group: 17 },
+            { number: 118, symbol: "Og", name: "Oganesson", weight: "(294)", category: "noble-gas", 
+              config: "[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁶", radius: null, electronegativity: null, ionicRadius: null, vanderwaals: null, period: 7, group: 18 }
+        ];
+
+        // Lanthanoids
+        const lanthanoids = [
+            { number: 58, symbol: "Ce", name: "Cerium", weight: "140.12", category: "lanthanoid", 
+              config: "[Xe] 4f¹ 5d¹ 6s²", radius: 2.15, electronegativity: 1.12, ionicRadius: 1.01, vanderwaals: null },
+            { number: 59, symbol: "Pr", name: "Praseodymium", weight: "140.91", category: "lanthanoid", 
+              config: "[Xe] 4f³ 6s²", radius: 2.47, electronegativity: 1.13, ionicRadius: 0.99, vanderwaals: null },
+            { number: 60, symbol: "Nd", name: "Neodymium", weight: "144.24", category: "lanthanoid", 
+              config: "[Xe] 4f⁴ 6s²", radius: 2.06, electronegativity: 1.14, ionicRadius: 0.983, vanderwaals: null },
+            { number: 61, symbol: "Pm", name: "Promethium", weight: "(145)", category: "lanthanoid", 
+              config: "[Xe] 4f⁵ 6s²", radius: 2.05, electronegativity: 1.13, ionicRadius: 0.97, vanderwaals: null },
+            { number: 62, symbol: "Sm", name: "Samarium", weight: "150.36", category: "lanthanoid", 
+              config: "[Xe] 4f⁶ 6s²", radius: 2.38, electronegativity: 1.17, ionicRadius: 0.958, vanderwaals: null },
+            { number: 63, symbol: "Eu", name: "Europium", weight: "151.96", category: "lanthanoid", 
+              config: "[Xe] 4f⁷ 6s²", radius: 2.31, electronegativity: 1.2, ionicRadius: 0.947, vanderwaals: null },
+            { number: 64, symbol: "Gd", name: "Gadolinium", weight: "157.25", category: "lanthanoid", 
+              config: "[Xe] 4f⁷ 5d¹ 6s²", radius: 2.33, electronegativity: 1.2, ionicRadius: 0.938, vanderwaals: null },
+            { number: 65, symbol: "Tb", name: "Terbium", weight: "158.93", category: "lanthanoid", 
+              config: "[Xe] 4f⁹ 6s²", radius: 2.25, electronegativity: 1.2, ionicRadius: 0.923, vanderwaals: null },
+            { number: 66, symbol: "Dy", name: "Dysprosium", weight: "162.50", category: "lanthanoid", 
+              config: "[Xe] 4f¹⁰ 6s²", radius: 2.28, electronegativity: 1.22, ionicRadius: 0.912, vanderwaals: null },
+            { number: 67, symbol: "Ho", name: "Holmium", weight: "164.93", category: "lanthanoid", 
+              config: "[Xe] 4f¹¹ 6s²", radius: 2.26, electronegativity: 1.23, ionicRadius: 0.901, vanderwaals: null },
+            { number: 68, symbol: "Er", name: "Erbium", weight: "167.26", category: "lanthanoid", 
+              config: "[Xe] 4f¹² 6s²", radius: 2.26, electronegativity: 1.24, ionicRadius: 0.890, vanderwaals: null },
+            { number: 69, symbol: "Tm", name: "Thulium", weight: "168.93", category: "lanthanoid", 
+              config: "[Xe] 4f¹³ 6s²", radius: 2.22, electronegativity: 1.25, ionicRadius: 0.880, vanderwaals: null },
+            { number: 70, symbol: "Yb", name: "Ytterbium", weight: "173.05", category: "lanthanoid", 
+              config: "[Xe] 4f¹⁴ 6s²", radius: 2.22, electronegativity: 1.1, ionicRadius: 0.868, vanderwaals: null },
+            { number: 71, symbol: "Lu", name: "Lutetium", weight: "174.97", category: "lanthanoid", 
+              config: "[Xe] 4f¹⁴ 5d¹ 6s²", radius: 2.17, electronegativity: 1.27, ionicRadius: 0.861, vanderwaals: null }
+        ];
+
+        // Actinoids
+        const actinoids = [
+            { number: 90, symbol: "Th", name: "Thorium", weight: "232.04", category: "actinoid", 
+              config: "[Rn] 6d² 7s²", radius: 2.06, electronegativity: 1.3, ionicRadius: 0.94, vanderwaals: null },
+            { number: 91, symbol: "Pa", name: "Protactinium", weight: "231.04", category: "actinoid", 
+              config: "[Rn] 5f² 6d¹ 7s²", radius: 2.00, electronegativity: 1.5, ionicRadius: 0.92, vanderwaals: null },
+            { number: 92, symbol: "U", name: "Uranium", weight: "238.03", category: "actinoid", 
+              config: "[Rn] 5f³ 6d¹ 7s²", radius: 1.96, electronegativity: 1.38, ionicRadius: 0.97, vanderwaals: 1.86 },
+            { number: 93, symbol: "Np", name: "Neptunium", weight: "(237)", category: "actinoid", 
+              config: "[Rn] 5f⁴ 6d¹ 7s²", radius: 1.90, electronegativity: 1.36, ionicRadius: 0.95, vanderwaals: null },
+            { number: 94, symbol: "Pu", name: "Plutonium", weight: "(244)", category: "actinoid", 
+              config: "[Rn] 5f⁶ 7s²", radius: 1.87, electronegativity: 1.28, ionicRadius: 0.93, vanderwaals: null },
+            { number: 95, symbol: "Am", name: "Americium", weight: "(243)", category: "actinoid", 
+              config: "[Rn] 5f⁷ 7s²", radius: 1.80, electronegativity: 1.13, ionicRadius: 0.925, vanderwaals: null },
+            { number: 96, symbol: "Cm", name: "Curium", weight: "(247)", category: "actinoid", 
+              config: "[Rn] 5f⁷ 6d¹ 7s²", radius: 1.69, electronegativity: 1.28, ionicRadius: 0.97, vanderwaals: null },
+            { number: 97, symbol: "Bk", name: "Berkelium", weight: "(247)", category: "actinoid", 
+              config: "[Rn] 5f⁹ 7s²", radius: 1.66, electronegativity: 1.3, ionicRadius: 0.96, vanderwaals: null },
+            { number: 98, symbol: "Cf", name: "Californium", weight: "(251)", category: "actinoid", 
+              config: "[Rn] 5f¹⁰ 7s²", radius: 1.68, electronegativity: 1.3, ionicRadius: 0.95, vanderwaals: null },
+            { number: 99, symbol: "Es", name: "Einsteinium", weight: "(252)", category: "actinoid", 
+              config: "[Rn] 5f¹¹ 7s²", radius: 1.65, electronegativity: 1.3, ionicRadius: null, vanderwaals: null },
+            { number: 100, symbol: "Fm", name: "Fermium", weight: "(257)", category: "actinoid", 
+              config: "[Rn] 5f¹² 7s²", radius: 1.67, electronegativity: 1.3, ionicRadius: null, vanderwaals: null },
+            { number: 101, symbol: "Md", name: "Mendelevium", weight: "(258)", category: "actinoid", 
+              config: "[Rn] 5f¹³ 7s²", radius: 1.73, electronegativity: 1.3, ionicRadius: null, vanderwaals: null },
+            { number: 102, symbol: "No", name: "Nobelium", weight: "(259)", category: "actinoid", 
+              config: "[Rn] 5f¹⁴ 7s²", radius: 1.76, electronegativity: 1.3, ionicRadius: null, vanderwaals: null },
+            { number: 103, symbol: "Lr", name: "Lawrencium", weight: "(266)", category: "actinoid", 
+              config: "[Rn] 5f¹⁴ 7s² 7p¹", radius: 1.61, electronegativity: 1.3, ionicRadius: null, vanderwaals: null }
+        ];
+
+        // Function to create an element box
+        function createElementBox(element) {
+            const elementDiv = document.createElement('div');
+            elementDiv.className = `element ${element.category}`;
+            elementDiv.dataset.number = element.number;
+            
+            elementDiv.innerHTML = `
+                <div class="atomic-number">${element.number}</div>
+                <div class="symbol">${element.symbol}</div>
+                <div class="name">${element.name}</div>
+                <div class="atomic-weight">${element.weight}</div>
+            `;
+            
+            elementDiv.addEventListener('click', () => showElementDetails(element));
+            
+            return elementDiv;
+        }
+
+        // Function to show element details in modal
+        function showElementDetails(element) {
+            const modal = document.getElementById('element-modal');
+            const modalSymbol = document.getElementById('modal-symbol');
+            const modalName = document.getElementById('modal-name');
+            const modalAtomicNumber = document.getElementById('modal-atomic-number');
+            const modalDetails = document.getElementById('modal-details');
+            
+            modalSymbol.textContent = element.symbol;
+            modalName.textContent = element.name;
+            modalAtomicNumber.textContent = `Atomic Number: ${element.number}`;
+            
+            modalDetails.innerHTML = `
+                <div class="detail-item">
+                    <div class="detail-label">Atomic Weight</div>
+                    <div class="detail-value">${element.weight}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Electron Configuration</div>
+                    <div class="detail-value">${element.config}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Atomic Radius (Å)</div>
+                    <div class="detail-value">${element.radius || 'N/A'}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Electronegativity</div>
+                    <div class="detail-value">${element.electronegativity || 'N/A'}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Ionic Radius (Å)</div>
+                    <div class="detail-value">${element.ionicRadius || 'N/A'}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Van der Waals Radius (Å)</div>
+                    <div class="detail-value">${element.vanderwaals || 'N/A'}</div>
+                </div>
+            `;
+            
+            modal.style.display = 'flex';
+        }
+
+        // Function to initialize the periodic table
+        function initPeriodicTable() {
+            const periodicTable = document.getElementById('periodic-table');
+            
+            // Add all elements to the periodic table
+            elements.forEach(element => {
+                periodicTable.appendChild(createElementBox(element));
+            });
+            
+            // Add Lanthanoids
+            lanthanoids.forEach(element => {
+                periodicTable.appendChild(createElementBox(element));
+            });
+            
+            // Add Actinoids
+            actinoids.forEach(element => {
+                periodicTable.appendChild(createElementBox(element));
+            });
+            
+            // Close modal functionality
+            document.getElementById('close-modal').addEventListener('click', () => {
+                document.getElementById('element-modal').style.display = 'none';
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', (event) => {
+                const modal = document.getElementById('element-modal');
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+
+        // Initialize the periodic table when the page loads
+        document.addEventListener('DOMContentLoaded', initPeriodicTable);
+    </script>
+</body>
+</html>
